@@ -1,0 +1,21 @@
+# Core RAG dependencies
+langchain
+langchain-community
+langchain-text-splitters
+langchain-chroma
+langchain-classic
+langchain-core
+
+# Gemini (replaces Ollama — no local LLM needed)
+langchain-google-genai
+google-generativeai
+
+# Vector store
+chromadb
+
+# API server
+fastapi
+uvicorn[standard]
+
+# Utilities
+python-dotenv

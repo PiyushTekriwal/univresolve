@@ -1,0 +1,89 @@
+# ============================================================
+# .gitignore for Rag_Project (Python / RAG / FastAPI)
+# ============================================================
+
+# ----------------------------
+# Python bytecode & cache
+# ----------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# ----------------------------
+# Virtual environment
+# ----------------------------
+venv/
+.venv/
+env/
+ENV/
+
+# ----------------------------
+# Environment variables / secrets
+# ----------------------------
+.env
+.env.*
+!.env.example
+
+# ----------------------------
+# Vector store / database data
+# ----------------------------
+db/
+
+# ----------------------------
+# Distribution / packaging
+# ----------------------------
+dist/
+build/
+*.egg-info/
+*.egg
+.eggs/
+wheels/
+MANIFEST
+
+# ----------------------------
+# Testing & coverage
+# ----------------------------
+.pytest_cache/
+.coverage
+htmlcov/
+coverage.xml
+*.cover
+.tox/
+nosetests.xml
+
+# ----------------------------
+# Type checkers
+# ----------------------------
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pytype/
+.pyre/
+
+# ----------------------------
+# Jupyter Notebooks
+# ----------------------------
+.ipynb_checkpoints/
+*.ipynb
+
+# ----------------------------
+# IDE & Editor
+# ----------------------------
+.vscode/
+.idea/
+*.suo
+*.sw?
+.DS_Store
+Thumbs.db
+
+# ----------------------------
+# Logs & temp files
+# ----------------------------
+*.log
+logs/
+tmp/
+temp/
