@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import ChatBot from "./components/ui/ChatBot";
 import { useState, useEffect } from "react";
 
 // Pages
@@ -59,6 +60,8 @@ function App() {
   return (
     <Router>
       <AppRoutes />
+      {/* RAG chatbot floating widget — global, renders on every page */}
+      <ChatBot />
     </Router>
   );
 }
