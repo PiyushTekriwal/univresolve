@@ -116,7 +116,10 @@ export default function ChatBot() {
         body: JSON.stringify({ question }),
       });
 
-      if (!res.ok) throw new Error(`Server error: ${res.status}`);
+      if (!res.ok) {
+        const errData = await res.json().catch(() => null);
+        throw new Error(errData?.detail || `Server error: ${res.status}`);
+      }
       const data = await res.json();
 
       setMessages((prev) =>
@@ -128,7 +131,7 @@ export default function ChatBot() {
       setMessages((prev) =>
         prev.map((m) =>
           m.id === loadMsg.id
-            ? { ...m, text: "⚠️ Couldn't reach the assistant. Please try again later.", loading: false }
+            ? { ...m, text: err.message ? `⚠️ ${err.message}` : "⚠️ Couldn't reach the assistant. Please try again later.", loading: false }
             : m
         )
       );
