@@ -32,6 +32,19 @@
 set -euf
 [ "${MVNW_VERBOSE-}" != debug ] || set -x
 
+# Auto-detect JAVA_HOME if unset
+if [ -z "${JAVA_HOME-}" ]; then
+  set +f
+  for candidate in "$HOME"/.vscode/extensions/redhat.java-*/jre/* /Library/Java/JavaVirtualMachines/*/Contents/Home; do
+    if [ -x "$candidate/bin/java" ]; then
+      export JAVA_HOME="$candidate"
+      export PATH="$JAVA_HOME/bin:$PATH"
+      break
+    fi
+  done
+  set -f
+fi
+
 # OS specific support.
 native_path() { printf %s\\n "$1"; }
 case "$(uname)" in

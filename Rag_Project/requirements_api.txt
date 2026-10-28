@@ -3,12 +3,12 @@ langchain
 langchain-community
 langchain-text-splitters
 langchain-chroma
-langchain-classic
 langchain-core
 
-# Gemini (replaces Ollama — no local LLM needed)
+# Gemini LLM and Embeddings
 langchain-google-genai
 google-generativeai
+google-genai
 
 # Vector store
 chromadb
@@ -19,3 +19,4 @@ uvicorn[standard]
 
 # Utilities
 python-dotenv
+

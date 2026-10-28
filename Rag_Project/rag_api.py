@@ -5,6 +5,8 @@ warnings.filterwarnings("ignore")
 import os
 os.environ["LANGCHAIN_TRACING_V2"] = "false"
 
+import re
+from pathlib import Path
 from contextlib import asynccontextmanager
 from typing import List
 
@@ -28,12 +30,34 @@ from langchain_core.runnables import RunnablePassthrough
 
 # ── Config ────────────────────────────────────────────────────────────────────
 
-load_dotenv()
+BASE_DIR = Path(__file__).resolve().parent
+ENV_PATH = BASE_DIR / ".env"
+
+def load_env_config():
+    if ENV_PATH.exists():
+        load_dotenv(dotenv_path=ENV_PATH, override=True)
+    load_dotenv()
+
+load_env_config()
 
 EMBED_MODEL = "gemini-embedding-001"   # confirmed available via google.genai SDK
-CHAT_MODEL  = "gemini-3.8-flash"       # Gemini LLM (2.0-flash deprecated)
-PERSIST_DIR = "db/chroma_db_gemini"
-DOCS_PATH   = "docs"
+CHAT_MODEL  = "gemini-3.5-flash"       # Fast, reliable Gemini LLM
+FALLBACK_MODELS = ["gemini-3.5-flash", "gemini-3.8-flash", "gemini-3.5-flash-lite"]
+PERSIST_DIR = str(BASE_DIR / "db" / "chroma_db_gemini")
+DOCS_PATH   = str(BASE_DIR / "docs")
+
+
+def _get_api_key() -> str:
+    load_env_config()
+    api_key = os.environ.get("GOOGLE_API_KEY") or os.environ.get("GEMINI_API_KEY")
+    if not api_key or api_key.strip() in ("", "your_gemini_api_key_here"):
+        raise RuntimeError(
+            "Gemini API key is not configured. Please set GOOGLE_API_KEY in Rag_Project/.env"
+        )
+    api_key = api_key.strip()
+    os.environ["GOOGLE_API_KEY"] = api_key
+    os.environ["GEMINI_API_KEY"] = api_key
+    return api_key
 
 
 # ── Custom Embedding Class ────────────────────────────────────────────────────
@@ -63,9 +87,7 @@ class GeminiEmbeddings(Embeddings):
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
 def _get_embeddings() -> GeminiEmbeddings:
-    api_key = os.environ.get("GOOGLE_API_KEY")
-    if not api_key:
-        raise RuntimeError("GOOGLE_API_KEY not set in .env")
+    api_key = _get_api_key()
     return GeminiEmbeddings(api_key=api_key)
 
 
@@ -109,11 +131,12 @@ def build_vector_store() -> Chroma:
     return vectorstore
 
 
-def build_qa_chain(vectorstore: Chroma):
+def build_qa_chain(vectorstore: Chroma, model_name: str = CHAT_MODEL):
+    api_key = _get_api_key()
     llm = ChatGoogleGenerativeAI(
-        model=CHAT_MODEL,
+        model=model_name,
         temperature=0.3,
-        google_api_key=os.environ["GOOGLE_API_KEY"],
+        google_api_key=api_key,
     )
 
     retriever = vectorstore.as_retriever(search_kwargs={"k": 5})
@@ -149,13 +172,23 @@ def build_qa_chain(vectorstore: Chroma):
 qa_chain = None
 
 
+def init_rag():
+    global qa_chain
+    vectorstore = build_vector_store()
+    qa_chain = build_qa_chain(vectorstore)
+    return qa_chain
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     global qa_chain
     print("[RAG] Initialising RAG pipeline (Gemini)...")
-    vectorstore = build_vector_store()
-    qa_chain    = build_qa_chain(vectorstore)
-    print("[RAG] Ready to serve requests ✓")
+    try:
+        init_rag()
+        print("[RAG] Ready to serve requests ✓")
+    except Exception as e:
+        print(f"[RAG] ⚠️ Initialization warning: {e}")
+        print("[RAG] The server will run, and the pipeline will initialize once GOOGLE_API_KEY is saved in Rag_Project/.env")
     yield
     print("[RAG] Shutting down.")
 
@@ -185,15 +218,90 @@ class ChatResponse(BaseModel):
 
 @app.get("/health")
 def health():
-    return {"status": "ok", "model": CHAT_MODEL, "embed_model": EMBED_MODEL}
+    return {
+        "status": "ok",
+        "model": CHAT_MODEL,
+        "embed_model": EMBED_MODEL,
+        "initialized": qa_chain is not None,
+    }
+
+
+def fallback_search(query: str) -> str:
+    """Local document excerpt search when Gemini API key is not configured."""
+    try:
+        docs = load_documents()
+        words = set(re.findall(r"\w+", query.lower()))
+        stop_words = {
+            "what", "is", "the", "a", "an", "in", "on", "of", "to", "for",
+            "and", "or", "how", "why", "who", "when", "where", "can", "you",
+            "tell", "me", "about", "this", "that", "it", "are", "was", "were",
+            "do", "does", "did", "please", "help"
+        }
+        query_words = words - stop_words or words
+
+        best_score = 0
+        best_snippet = ""
+        for doc in docs:
+            paragraphs = doc.page_content.split("\n\n")
+            for p in paragraphs:
+                p_clean = p.strip()
+                if len(p_clean) < 40:
+                    continue
+                p_lower = p_clean.lower()
+                score = sum(1 for w in query_words if w in p_lower)
+                if score > best_score:
+                    best_score = score
+                    best_snippet = p_clean
+
+        if best_snippet and best_score > 0:
+            snippet_display = best_snippet[:650] + ("..." if len(best_snippet) > 650 else "")
+            return (
+                f"{snippet_display}\n\n"
+                f"---\n"
+                f"💡 *Retrieved from knowledge base docs. To enable AI conversational reasoning, "
+                f"configure `GOOGLE_API_KEY` in `Rag_Project/.env`.*"
+            )
+    except Exception as e:
+        print(f"[RAG] Fallback document search error: {e}")
+
+    return (
+        "👋 The UNIV-Resolve assistant is active!\n\n"
+        "To enable AI-generated answers, please set your Gemini API key in `Rag_Project/.env`:\n"
+        "```\nGOOGLE_API_KEY=AIzaSy...your_key_here\n```\n"
+        "Get a free key from Google AI Studio: https://aistudio.google.com/app/apikey"
+    )
 
 
 @app.post("/chat", response_model=ChatResponse)
 async def chat(req: ChatRequest):
-    if not req.question.strip():
+    global qa_chain
+    question = req.question.strip()
+    if not question:
         raise HTTPException(status_code=400, detail="Question cannot be empty.")
-    if qa_chain is None:
-        raise HTTPException(status_code=503, detail="RAG chain not initialised yet.")
 
-    answer = qa_chain.invoke(req.question.strip())
-    return ChatResponse(answer=answer)
+    # 1. Ensure vectorstore is available
+    vectorstore = None
+    try:
+        vectorstore = build_vector_store()
+    except Exception as e:
+        print(f"[RAG] Vectorstore init error ({e}). Using document fallback.")
+        return ChatResponse(answer=fallback_search(question))
+
+    # 2. Invoke RAG chain across available Gemini models
+    for model_cand in FALLBACK_MODELS:
+        try:
+            chain = build_qa_chain(vectorstore, model_name=model_cand)
+            answer = chain.invoke(question)
+            if answer and answer.strip():
+                return ChatResponse(answer=answer.strip())
+        except Exception as e:
+            print(f"[RAG] Model '{model_cand}' error ({e}), trying next candidate...")
+
+    print("[RAG] All Gemini models failed or unavailable. Falling back to document search.")
+    return ChatResponse(answer=fallback_search(question))
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("rag_api:app", host="127.0.0.1", port=8001, reload=True)
+
