@@ -3,13 +3,13 @@ import ChatBot from "./components/ui/ChatBot";
 import { useState, useEffect } from "react";
 
 // Pages
-import Home from "./pages/Home";
-import Dashboard from "./pages/Dashboard";
-import Complaint from "./pages/ComplaintForm";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import History from "./pages/History";
-import AdminDashboard from "./pages/AdminDashboard";
+import Home          from "./pages/Home";
+import Dashboard     from "./pages/dashboard";
+import Complaint     from "./pages/ComplaintForm";
+import Login         from "./pages/login";
+import Register      from "./pages/register";
+import History       from "./pages/History";
+import Admin         from "./pages/Admin";         // Full admin panel with tabs
 
 function AppRoutes() {
   const location = useLocation();
@@ -28,9 +28,10 @@ function AppRoutes() {
 
   return (
     <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
+      <Route path="/"          element={<Home />} />
+      <Route path="/login"     element={<Login />} />
+      <Route path="/register"  element={<Register />} />
+
       <Route
         path="/dashboard"
         element={user ? <Dashboard /> : <Navigate to="/login" />}
@@ -45,12 +46,9 @@ function AppRoutes() {
       />
       <Route
         path="/admin"
-        element={
-          isAdmin
-            ? <AdminDashboard />
-            : <Navigate to="/dashboard" />
-        }
+        element={isAdmin ? <Admin /> : <Navigate to="/dashboard" />}
       />
+
       <Route path="*" element={<Navigate to="/" />} />
     </Routes>
   );

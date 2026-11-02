@@ -1,0 +1,71 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+
+  cloud:
+    gateway:
+      # ─── Route definitions ───────────────────────────────────────────────
+      routes:
+        - id: user-service
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/api/users/**
+
+        - id: issue-service
+          uri: lb://ISSUE-SERVICE
+          predicates:
+            - Path=/api/issues/**
+
+        - id: worker-service
+          uri: lb://WORKER-SERVICE
+          predicates:
+            - Path=/api/workers/**
+
+      # ─── Global CORS (handles all routes, replaces per-controller @CrossOrigin) ──
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins:
+              - "http://localhost:5173"
+              - "http://127.0.0.1:5173"
+              - "http://localhost:3000"
+              - "http://127.0.0.1:3000"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - PATCH
+              - OPTIONS
+            allowedHeaders: "*"
+            allowCredentials: true
+            maxAge: 3600
+
+    # Load-balancer cache TTL (shorter = faster discovery after service restarts)
+    loadbalancer:
+      cache:
+        ttl: 5s
+
+# ─── Eureka client ──────────────────────────────────────────────────────────
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    fetch-registry: true
+    register-with-eureka: true
+  instance:
+    prefer-ip-address: true
+
+# ─── Actuator ───────────────────────────────────────────────────────────────
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, gateway
+
+logging:
+  level:
+    org.springframework.cloud.gateway: INFO

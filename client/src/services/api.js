@@ -1,86 +1,94 @@
 const BASE_URL = "/api";
 
-/* -------------------- COMPLAINTS -------------------- */
+/* ─────────────────────────── COMPLAINTS ─────────────────────────────────── */
 
 export const getUserComplaints = async (userId) => {
   const res = await fetch(`${BASE_URL}/issues/user/${userId}`);
-
-  if (!res.ok) {
-    throw new Error("Failed to fetch user complaints");
-  }
-
-  return await res.json();
+  if (!res.ok) throw new Error("Failed to fetch user complaints");
+  return res.json();
 };
 
-/* 🔥 FIXED ADMIN API */
 export const getAllComplaints = async () => {
   const res = await fetch(`${BASE_URL}/issues/admin`);
-
-  if (!res.ok) {
-    throw new Error("Failed to fetch complaints");
-  }
-
-  return await res.json();
+  if (!res.ok) throw new Error("Failed to fetch complaints");
+  return res.json();
 };
 
 export const deleteComplaint = async (issueId) => {
-  const res = await fetch(`${BASE_URL}/issues/${issueId}`, {
-    method: "DELETE",
-  });
-
-  if (!res.ok) {
-    throw new Error("Failed to resolve complaint");
-  }
-
+  const res = await fetch(`${BASE_URL}/issues/${issueId}`, { method: "DELETE" });
+  if (!res.ok) throw new Error("Failed to resolve complaint");
   return { success: true };
 };
 
 export const createComplaint = async (issue) => {
-  const response = await fetch(`${BASE_URL}/issues`, {
+  const res = await fetch(`${BASE_URL}/issues`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(issue),
   });
-
-  if (!response.ok) {
-    throw new Error("Failed to create complaint");
+  if (!res.ok) {
+    const errText = await res.text().catch(() => "Failed to create complaint");
+    throw new Error(errText || "Failed to create complaint");
   }
-
-  return await response.json();
+  return res.json();
 };
 
-/* -------------------- USERS -------------------- */
+/* ─────────────────────────── USERS ──────────────────────────────────────── */
 
 export const loginUser = async (user) => {
-  const response = await fetch(`${BASE_URL}/users/login`, {
+  const res = await fetch(`${BASE_URL}/users/login`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(user),
   });
-
-  if (!response.ok) {
-    throw new Error("Invalid email or password");
-  }
-
-  return await response.json();
+  if (!res.ok) throw new Error("Invalid email or password");
+  return res.json();
 };
 
 export const registerUser = async (user) => {
-  const response = await fetch(`${BASE_URL}/users/register`, {
+  const res = await fetch(`${BASE_URL}/users/register`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(user),
   });
-
-  if (!response.ok) {
-    throw new Error("Registration failed");
+  if (!res.ok) {
+    const errText = await res.text().catch(() => "Registration failed");
+    throw new Error(errText || "Registration failed");
   }
+  return res.json();
+};
 
-  return await response.json();
+/* ─────────────────────────── WORKERS ────────────────────────────────────── */
+
+export const getAllWorkers = async () => {
+  const res = await fetch(`${BASE_URL}/workers`);
+  if (!res.ok) throw new Error("Failed to fetch workers");
+  return res.json();
+};
+
+export const createWorker = async (worker) => {
+  const res = await fetch(`${BASE_URL}/workers`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(worker),
+  });
+  if (!res.ok) {
+    const errText = await res.text().catch(() => "Failed to add worker");
+    throw new Error(errText || "Failed to add worker");
+  }
+  return res.json();
+};
+
+export const deleteWorker = async (workerId) => {
+  const res = await fetch(`${BASE_URL}/workers/${workerId}`, {
+    method: "DELETE",
+  });
+  if (!res.ok) throw new Error("Failed to delete worker");
+  return { success: true };
+};
+
+export const getPendingAssignments = async () => {
+  const res = await fetch(`${BASE_URL}/workers/assignments/pending`);
+  if (!res.ok) throw new Error("Failed to fetch pending assignments");
+  return res.json();
 };

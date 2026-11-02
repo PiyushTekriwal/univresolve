@@ -1,0 +1,110 @@
+UNIV-Resolve — University Complaint Management System
+Knowledge Base for AI Assistant
+======================================================
+
+WHAT IS UNIV-RESOLVE?
+----------------------
+UNIV-Resolve is a university complaint management platform that allows students, faculty, and staff to register complaints about campus issues and have them automatically assigned to the right maintenance worker. The system tracks every complaint from submission to resolution.
+
+HOW TO REGISTER (CREATE AN ACCOUNT)
+-------------------------------------
+1. Go to the Register page from the homepage.
+2. Enter your full name, a valid email address (any email is accepted — not restricted to university email), and a password (minimum 6 characters).
+3. Click "Register". You will be logged in automatically.
+4. Note: If you receive an error saying "Email already registered", use the Login page instead.
+
+HOW TO LOGIN
+-------------
+1. Go to the Login page.
+2. Enter your registered email address and password.
+3. Click "Login". You will be redirected to your dashboard.
+4. Admin login: Use email admin@kiit.ac.in with the admin password.
+5. If you forgot your password, contact the university administration.
+
+HOW TO FILE A COMPLAINT
+------------------------
+1. After logging in, click "File a Complaint" from the navigation menu or dashboard.
+2. Fill in the Complaint Form:
+   - Issue Title: A short, clear title (e.g., "Broken ceiling fan in Room 204").
+   - Category: Select the category that best matches your problem (see categories below).
+   - Description: Describe the issue in detail. Include the location (hostel name, block, room number, floor) and any relevant details.
+3. Click "Submit Complaint".
+4. You will see a confirmation message. The complaint is now registered and a worker will be assigned automatically.
+
+COMPLAINT CATEGORIES AND WHAT THEY COVER
+------------------------------------------
+1. ELECTRICAL — Broken fans, faulty lights, dead power outlets, short circuits, electrical hazards. A qualified Electrician is assigned.
+2. PLUMBING — Water leaks, clogged drains, broken taps, no water supply, pipe bursts. A Plumber is assigned.
+3. HOSTEL MAINTENANCE — Broken furniture, damaged doors or windows, broken almirahs, ceiling damage, structural repairs. A Carpenter is assigned.
+4. SANITATION / HYGIENE — Dirty common areas, overflowing dustbins, pest issues, washroom hygiene, waste management. A Janitor is assigned.
+5. MESS / FOOD — Food quality complaints, canteen cleanliness, wrong billing, special dietary needs. A Mess Worker is assigned.
+6. SECURITY — Suspicious activity, broken CCTV, faulty locks, unauthorized access, safety concerns. A Security Guard is assigned.
+7. INTERNET / WIFI — No internet connectivity, slow WiFi, broken LAN port, router issues. An IT Technician is assigned.
+8. ACADEMICS — Timetable issues, exam scheduling, faculty concerns, course-related problems. An Academic Coordinator is assigned.
+9. OTHER — Any issue that does not fit the above categories. A General Worker is assigned.
+
+HOW WORKER ASSIGNMENT WORKS
+-----------------------------
+When you submit a complaint, the system automatically:
+1. Identifies the complaint category (e.g., "electrical").
+2. Finds the worker of the matching type (e.g., Electrician) who has the fewest tasks today and is available.
+3. A worker can handle a maximum of 5 complaints per shift.
+4. If all workers of that type are currently at their maximum capacity (5 tasks), your complaint is queued and will be automatically assigned as soon as any worker of that type becomes free.
+5. There is no need to call anyone — the assignment is instant and automatic.
+
+COMPLAINT STATUSES
+-------------------
+- OPEN: Your complaint has been received but a worker has not been assigned yet (queued).
+- IN PROGRESS: A worker has been assigned and is working on your complaint.
+- RESOLVED: The issue has been fixed and the complaint has been closed.
+- PENDING ASSIGNMENT: A worker of the required type is not currently available; you will be assigned one as soon as a worker becomes free.
+
+HOW TO TRACK YOUR COMPLAINT
+-----------------------------
+1. Go to your Dashboard after logging in.
+2. You will see all your active (open / in-progress) complaints.
+3. Each complaint card shows: title, category, status, the assigned worker's name, and their worker type.
+4. If a worker is assigned, their name appears directly on the complaint card.
+
+HOW TO VIEW COMPLAINT HISTORY
+-------------------------------
+1. Go to the "History" page from the navigation menu.
+2. All your resolved complaints are listed here with their resolution details.
+
+COMMON ISSUES AND SOLUTIONS
+-----------------------------
+1. "I submitted a complaint but no worker is showing." — This means all workers of that type are currently at maximum capacity (5 tasks each). Your complaint is in the queue and will be assigned automatically when a worker becomes free. No action needed from your side.
+
+2. "I cannot login." — Check that you are using the correct email and password. Passwords are case-sensitive. If your account was created recently, wait a moment and try again.
+
+3. "My complaint is still 'Open' after a long time." — If no worker has been assigned for an extended period, contact the university administration or the admin. It may indicate that no workers of the required type have been added to the system yet.
+
+4. "I filed a complaint in the wrong category." — Contact the admin to get the complaint re-categorized, as the worker type depends on the category.
+
+5. "The Submit button is greyed out / not working." — Make sure all three fields (Title, Category, Description) are filled in. The Category must be selected from the dropdown.
+
+6. "I get an error when registering." — Make sure your email is in a valid format (example: yourname@gmail.com). If the error says "Email already registered", use the Login page.
+
+7. "How do I know when my complaint is resolved?" — Check your Dashboard or History page. When the status changes to "Resolved", the issue has been addressed.
+
+8. "I need to report an urgent safety issue." — Select the "Security" category for immediate safety concerns. For life-threatening emergencies, contact campus security directly by phone.
+
+WORKER SHIFT HOURS AND DAILY RESET
+-------------------------------------
+Workers are available from the start of the shift at 8:00 AM each day. At 8:00 AM, all worker task counts are reset to zero and all workers become available again. Any complaints that were queued overnight (due to all workers being at capacity) will be automatically assigned at shift start.
+
+ADMIN FEATURES
+---------------
+Admins can:
+- View all complaints across all users.
+- Mark any complaint as resolved.
+- Add new workers to the system by specifying name, email, phone, and worker type.
+- View and manage existing workers (edit or remove workers).
+- See which workers are IDLE vs BUSY.
+- View pending (unassigned) complaints.
+
+CONTACT AND ESCALATION
+------------------------
+If your complaint has not been addressed after a reasonable time, or if you face a system issue, please contact the university administration office directly. The admin can manually review and escalate complaints.
+
+For technical issues with the UNIV-Resolve platform itself (not complaint issues), report to the IT department.

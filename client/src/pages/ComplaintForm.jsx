@@ -52,7 +52,7 @@ const ComplaintForm = () => {
                 description: formData.description,
                 category: formData.category,
                 status: "open",
-                user: { id: user.id }
+                userId: user.id          // microservices Issue model uses plain userId field
             });
             setIsSubmitted(true);
         } catch (err) {
