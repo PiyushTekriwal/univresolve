@@ -7,6 +7,8 @@ import com.kiit.resolve.model.User;
 import com.kiit.resolve.repository.IssueRepository;
 import com.kiit.resolve.repository.UserRepository;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -72,7 +74,19 @@ public class IssueController {
         Issue issue = issueRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Issue not found"));
 
+        LocalDateTime now = LocalDateTime.now();
         issue.setStatus("resolved");
+        issue.setSlaStatus("RESOLVED");
+        issue.setEstimatedRemainingMinutes(0L);
+        issue.setResolvedAt(now);
+
+        if (issue.getCreatedAt() != null) {
+            long minutes = Duration.between(issue.getCreatedAt(), now).toMinutes();
+            issue.setActualResolutionMinutes(Math.max(1L, minutes));
+        } else {
+            issue.setActualResolutionMinutes(120L);
+        }
+
         issueRepository.save(issue);
 
         return Map.of("message", "Issue marked as resolved");

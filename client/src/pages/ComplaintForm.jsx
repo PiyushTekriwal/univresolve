@@ -18,7 +18,9 @@ const ComplaintForm = () => {
     const [formData, setFormData] = useState({
         title: '',
         category: '',
-        description: ''
+        description: '',
+        severity: '',
+        impact: ''
     });
 
     const handleSubmit = async (e) => {
@@ -51,6 +53,8 @@ const ComplaintForm = () => {
                 title: formData.title,
                 description: formData.description,
                 category: formData.category,
+                severity: formData.severity || null,
+                impact: formData.impact || null,
                 status: "open",
                 userId: user.id          // microservices Issue model uses plain userId field
             });
@@ -81,7 +85,9 @@ const ComplaintForm = () => {
                             <CheckCircle2 className="h-10 w-10 text-green-600" />
                         </div>
                         <h2 className="text-2xl font-bold mb-2">Complaint Submitted!</h2>
-                        <p className="text-slate-600 mb-8">Your complaint has been registered. You can track its progress in your dashboard.</p>
+                        <p className="text-slate-600 mb-8">
+                            Your complaint has been registered with automatic priority, SLA target deadline, and estimated resolution time.
+                        </p>
                         <Link to="/dashboard">
                             <Button className="w-full">Go to Dashboard</Button>
                         </Link>
@@ -96,7 +102,7 @@ const ComplaintForm = () => {
             <div className="max-w-3xl mx-auto px-4 py-10">
                 <div className="mb-8">
                     <h1 className="text-3xl font-bold text-slate-900">File a Complaint</h1>
-                    <p className="text-slate-500 mt-2">Describe your issue and we'll make sure it reaches the right department.</p>
+                    <p className="text-slate-500 mt-2">Describe your issue and we'll calculate priority, assign an SLA target, and dispatch workers.</p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 space-y-6">
@@ -136,9 +142,42 @@ const ComplaintForm = () => {
                             <option value="sanitation">🧹 Sanitation / Hygiene</option>
                             <option value="academics">📚 Academics</option>
                             <option value="mess">🍽️ Mess / Food</option>
-                            <option value="security">🔒 Security</option>
+                            <option value="security">🛡️ Security</option>
                             <option value="other">📋 Other</option>
                         </Select>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <Label htmlFor="severity">Urgency / Severity (Optional)</Label>
+                            <Select
+                                id="severity"
+                                name="severity"
+                                value={formData.severity}
+                                onChange={handleChange}
+                            >
+                                <option value="">Auto-detect from issue description</option>
+                                <option value="LOW">Low (Routine maintenance)</option>
+                                <option value="MEDIUM">Medium (Standard attention)</option>
+                                <option value="HIGH">High (Urgent resolution needed)</option>
+                                <option value="CRITICAL">Critical (Safety hazard / Emergency)</option>
+                            </Select>
+                        </div>
+
+                        <div>
+                            <Label htmlFor="impact">Impact Level (Optional)</Label>
+                            <Select
+                                id="impact"
+                                name="impact"
+                                value={formData.impact}
+                                onChange={handleChange}
+                            >
+                                <option value="">Auto-detect from location & scope</option>
+                                <option value="INDIVIDUAL">Individual student</option>
+                                <option value="DEPARTMENT">Floor / Block / Department</option>
+                                <option value="UNIVERSITY_WIDE">Campus / University-wide</option>
+                            </Select>
+                        </div>
                     </div>
 
                     <div>

@@ -34,6 +34,22 @@ public class TaskAssignment {
     @Enumerated(EnumType.STRING)
     private AssignmentStatus status = AssignmentStatus.PENDING;
 
+    // ── Priority & Aging Queue Fields ─────────────────────────────────────────
+    @Column(name = "priority")
+    private String priority = "LOW";
+
+    @Column(name = "base_priority_score")
+    private Integer basePriorityScore = 10;
+
+    @Column(name = "current_priority_score")
+    private Integer currentPriorityScore = 10;
+
+    @Column(name = "issue_created_at")
+    private LocalDateTime issueCreatedAt;
+
+    @Column(name = "priority_updated_at")
+    private LocalDateTime priorityUpdatedAt;
+
     @Column(name = "assigned_at")
     private LocalDateTime assignedAt;
 
@@ -42,4 +58,23 @@ public class TaskAssignment {
 
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
+
+    public Integer getBasePriorityScore() {
+        if (basePriorityScore != null) return basePriorityScore;
+        String p = priority != null ? priority.toUpperCase() : "LOW";
+        return switch (p) {
+            case "CRITICAL" -> 100;
+            case "HIGH" -> 70;
+            case "MEDIUM" -> 40;
+            default -> 10;
+        };
+    }
+
+    public Integer getCurrentPriorityScore() {
+        return currentPriorityScore != null ? currentPriorityScore : getBasePriorityScore();
+    }
+
+    public LocalDateTime getEffectiveCreatedAt() {
+        return issueCreatedAt != null ? issueCreatedAt : (createdAt != null ? createdAt : LocalDateTime.now());
+    }
 }

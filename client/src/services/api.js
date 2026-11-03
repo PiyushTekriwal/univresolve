@@ -33,6 +33,18 @@ export const createComplaint = async (issue) => {
   return res.json();
 };
 
+export const recalculateSla = async () => {
+  const res = await fetch(`${BASE_URL}/issues/recalculate`, { method: "POST" });
+  if (!res.ok) throw new Error("Failed to recalculate SLA");
+  return res.json();
+};
+
+export const getSlaAnalytics = async () => {
+  const res = await fetch(`${BASE_URL}/issues/analytics`);
+  if (!res.ok) throw new Error("Failed to fetch SLA analytics");
+  return res.json();
+};
+
 /* ─────────────────────────── USERS ──────────────────────────────────────── */
 
 export const loginUser = async (user) => {

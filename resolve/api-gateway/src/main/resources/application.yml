@@ -12,17 +12,17 @@ spring:
         - id: user-service
           uri: lb://USER-SERVICE
           predicates:
-            - Path=/api/users/**
+            - Path=/api/users, /api/users/**
 
         - id: issue-service
           uri: lb://ISSUE-SERVICE
           predicates:
-            - Path=/api/issues/**
+            - Path=/api/issues, /api/issues/**
 
         - id: worker-service
           uri: lb://WORKER-SERVICE
           predicates:
-            - Path=/api/workers/**
+            - Path=/api/workers, /api/workers/**
 
       # ─── Global CORS (handles all routes, replaces per-controller @CrossOrigin) ──
       globalcors:
